@@ -1,0 +1,9 @@
+@AiRecipe.Content.Api_HostAddress = https://localhost:7148
+
+### Get all saved recipes (Service A)
+GET {{AiRecipe.Content.Api_HostAddress}}/api/recipes
+Accept: application/json
+
+### Create new recipe (call Service B)
+POST {{AiRecipe.Content.Api_HostAddress}}/api/recipes
+Content-Type: application/json

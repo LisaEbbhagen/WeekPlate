@@ -1,0 +1,6 @@
+@AiRecipe.LlmProxy.Api_HostAddress = https://localhost:7121
+
+GET {{AiRecipe.LlmProxy.Api_HostAddress}}
+Accept: application/json
+
+###
