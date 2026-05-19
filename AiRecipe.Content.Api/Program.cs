@@ -5,6 +5,7 @@ using AiRecipe.Content.Api.Filters;
 using AiRecipe.Content.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Net.Http;
 
 
 // Application startup
@@ -81,9 +82,11 @@ builder.Services.AddDbContext<RecipeDbContext>(options =>
 
 // 3. HTTP clients for external API
 // Includes timeout and resilience (retry with exponential backoff).
+var serviceSettingsLlmProxyBaseUrl = builder.Configuration["ServiceSettings:LlmProxyBaseUrl"] ?? throw new InvalidOperationException("LlmProxy Base URL is not configured.");
+
 builder.Services.AddHttpClient<ILlmClient, LlmClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7121");
+    client.BaseAddress = new Uri(serviceSettingsLlmProxyBaseUrl);
     client.Timeout = TimeSpan.FromMinutes(2);
 })
 .AddStandardResilienceHandler(options =>

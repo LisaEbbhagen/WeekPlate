@@ -33,16 +33,16 @@ namespace AiRecipe.Content.Api.Clients
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new LlmClientException($"LlmProxy returned an error: {response.StatusCode}");
+                    throw new LlmClientBadGatewayException($"LlmProxy returned an error: {response.StatusCode}");
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<MealPlanDto>(options);
-                return result ?? throw new LlmClientException("No answer from AI.");
+                return result ?? throw new LlmClientBadGatewayException("No answer from AI.");
             }
             catch (HttpRequestException ex)
             {
                 _logger.LogError(ex, "Error while calling LlmProxy.");
-                throw new LlmClientException("An error occurred while calling LlmProxy.", ex);
+                throw new LlmClientBadGatewayException("An error occurred while calling LlmProxy.", ex);
             }
         }
     }

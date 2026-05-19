@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AiRecipe.Content.Api.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AiRecipe.Content.Api.Filters
@@ -26,26 +27,17 @@ namespace AiRecipe.Content.Api.Filters
 
             if (string.IsNullOrEmpty(expected))
             {
-                _logger.LogError("API-nyckeln kunde inte hittas i konfigurationen!");
+                _logger.LogError("API key could not be found in the configuration!");
             }
 
             if (!context.HttpContext.Request.Headers.TryGetValue("x-api-key", out var extractedApiKey))
             {
-                context.Result = new ContentResult()
-                {
-                    StatusCode = 401,
-                    Content = "API Key is missing"
-                };
-                return;
+                throw new LlmClientUnauthorizedException("API key is missing.");
             }
+
             if (!_apiKey.Equals(extractedApiKey))
             {
-                context.Result = new ContentResult()
-                {
-                    StatusCode = 403,
-                    Content = "Unauthorized: Wrong API Key"
-                };
-                return;
+                throw new LlmClientForbiddenException("Invalid API key.");
             }
             await next();
         }

@@ -20,15 +20,6 @@ namespace AiRecipe.LlmProxy.Api.Services
             _httpClient = httpClient;
             _apiKey = config["OpenAI:ApiKey"] ?? throw new ArgumentNullException("OpenAI API Key is missing.");
         }
-            //var options = new OpenAIClientOptions
-            //{
-            //    Endpoint = new Uri("https://api.openai.com/v1/")
-            //};
-
-            //var creditials = new System.ClientModel.ApiKeyCredential(_apiKey);
-            //var client = new OpenAIClient(creditials, options);
-            //_chatClient = client.GetChatClient("gpt-4o-mini");
-        
 
         public async Task<MealPlanDto> GenerateWeeklyMenuAsync(string prompt)
         {
@@ -43,7 +34,7 @@ namespace AiRecipe.LlmProxy.Api.Services
                     "  \"days\": [ " +
                     "    { " +
                     "      \"dayName\": \"Monday\", " +
-                    "      \"recipe\": { " + 
+                    "      \"recipe\": { " +
                     "        \"title\": \"Recipe Title\", " +
                     "        \"categoryName\": \"Pasta\", " +
                     "        \"totalTimeMinutes\": 30, " +
@@ -75,8 +66,18 @@ namespace AiRecipe.LlmProxy.Api.Services
                 request.Content = JsonContent.Create(requestBody);
 
                 var response = await _httpClient.SendAsync(request);
-                response.EnsureSuccessStatusCode();
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("OpenAI API returned: {StatusCode}", response.StatusCode);
+                    throw response.StatusCode switch
+                    {
+                        System.Net.HttpStatusCode.Unauthorized => new LlmUnauthorizedException("Unauthorized access to OpenAI API."),
+                        System.Net.HttpStatusCode.Forbidden => new LlmForbiddenException("Forbidden access to OpenAI API."),
+                        System.Net.HttpStatusCode.TooManyRequests => new LlmRateLimitException("Rate limit exceeded for OpenAI API."),
+                        _ => new LlmProxyException($"An unexpected error occurred while accessing OpenAI API: {response.StatusCode}")
+                    };
+                }
 
                 // 3. Deserialize JSON-answer to MealPlanDto
                 var responseJson = await response.Content.ReadFromJsonAsync<JsonElement>();
@@ -93,7 +94,12 @@ namespace AiRecipe.LlmProxy.Api.Services
                 return result ?? throw new LlmProxyException("Failed to deserialize the meal plan.");
             }
 
-            catch (Exception ex)
+            catch (TaskCanceledException ex)
+            {
+                _logger.LogError(ex, "Timeout occurred while accessing OpenAI API for prompt: {Prompt}", prompt);
+                throw new LlmTimeOutException("Timeout occurred while accessing OpenAI API.", ex);
+            }
+            catch (Exception ex) when (ex is not LlmUnauthorizedException && ex is not LlmTimeOutException && ex is not LlmRateLimitException)
             {
                 _logger.LogError(ex, "Failed to generate mealplan from: {Prompt}", prompt);
                 throw new LlmProxyException("Failed to generate mealplan from prompt.", ex);
