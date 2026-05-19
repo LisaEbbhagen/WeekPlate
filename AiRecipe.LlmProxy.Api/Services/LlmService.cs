@@ -73,6 +73,7 @@ namespace AiRecipe.LlmProxy.Api.Services
                     throw response.StatusCode switch
                     {
                         System.Net.HttpStatusCode.Unauthorized => new LlmUnauthorizedException("Unauthorized access to OpenAI API."),
+                        System.Net.HttpStatusCode.Forbidden => new LlmForbiddenException("Forbidden access to OpenAI API."),
                         System.Net.HttpStatusCode.TooManyRequests => new LlmRateLimitException("Rate limit exceeded for OpenAI API."),
                         _ => new LlmProxyException($"An unexpected error occurred while accessing OpenAI API: {response.StatusCode}")
                     };

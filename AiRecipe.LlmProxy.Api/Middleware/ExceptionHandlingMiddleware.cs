@@ -46,6 +46,13 @@ namespace AiRecipe.LlmProxy.Api.Middleware
                     Detail = ex.Message
                 },
 
+                LlmForbiddenException ex => new ProblemDetails
+                {
+                    Status = 403,
+                    Title = "Forbidden",
+                    Detail = ex.Message
+                },
+
                 NotFoundException ex => new ProblemDetails
                 {
                     Status = 404,

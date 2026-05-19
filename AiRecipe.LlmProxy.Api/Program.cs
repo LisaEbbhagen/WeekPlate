@@ -63,10 +63,11 @@ builder.Services.AddSwaggerGen(options =>
 // 3. HTTP clients for external APIs
 // Includes timeout and resilience (retry with exponential backoff).
 var openAIKey = builder.Configuration["OpenAI:ApiKey"] ?? throw new InvalidOperationException("OpenAI Api key is not configured.");
+var openAiBaseUrl = builder.Configuration["OpenAI:BaseUrl"] ?? throw new InvalidOperationException("OpenAI Base URL is not configured.");
 
 builder.Services.AddHttpClient<ILlmService, LlmService>(client =>
 {
-    client.BaseAddress = new Uri("https://api.openai.com/v1/");
+    client.BaseAddress = new Uri(openAiBaseUrl);
     client.Timeout = TimeSpan.FromMinutes(2);
 })
 .AddStandardResilienceHandler(options =>

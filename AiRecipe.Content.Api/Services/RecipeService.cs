@@ -122,9 +122,19 @@ namespace AiRecipe.Content.Api.Services
                 _logger.LogInformation("Successfully imported weekly menu with prompt: {Prompt}", prompt);
                 return mealPlan;
             }
+            catch (LlmClientTimeOutException ex)
+            {
+                _logger.LogError(ex, "Llm Proxy timeout during import.");
+                throw;
+            }
+            catch (LlmClientRateLimitException ex)
+            {
+                _logger.LogError(ex, "Llm Proxy rate limit exceeded during import.");
+                throw;
+            }
             catch (LlmClientBadGatewayException ex)
             {
-                _logger.LogError(ex, "Communication error with Llm Service during import.");
+                _logger.LogError(ex, "Communication error with Llm Proxy during import.");
                 throw;
             }
             catch (Exception ex)
