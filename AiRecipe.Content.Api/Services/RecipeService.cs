@@ -122,7 +122,7 @@ namespace AiRecipe.Content.Api.Services
                 _logger.LogInformation("Successfully imported weekly menu with prompt: {Prompt}", prompt);
                 return mealPlan;
             }
-            catch (LlmClientException ex)
+            catch (LlmClientBadGatewayException ex)
             {
                 _logger.LogError(ex, "Communication error with Llm Service during import.");
                 throw;

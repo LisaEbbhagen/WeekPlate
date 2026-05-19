@@ -32,13 +32,6 @@ namespace AiRecipe.LlmProxy.Api.Middleware
 
             var problemDetails = exception switch
             {
-                NotFoundException ex => new ProblemDetails
-                {
-                    Status = 404,
-                    Title = "Not Found",
-                    Detail = ex.Message
-                },
-
                 BadRequestException ex => new ProblemDetails
                 {
                     Status = 400,
@@ -46,10 +39,38 @@ namespace AiRecipe.LlmProxy.Api.Middleware
                     Detail = ex.Message
                 },
 
+                LlmUnauthorizedException ex => new ProblemDetails
+                {
+                    Status = 401,
+                    Title = "Unauthorized",
+                    Detail = ex.Message
+                },
+
+                NotFoundException ex => new ProblemDetails
+                {
+                    Status = 404,
+                    Title = "Not Found",
+                    Detail = ex.Message
+                },
+
+                LlmRateLimitException ex => new ProblemDetails
+                {
+                    Status = 429,
+                    Title = "Too Many Requests",
+                    Detail = ex.Message
+                },
+
                 LlmProxyException ex => new ProblemDetails
                 {
                     Status = 502,
                     Title = "AI Service Link Error",
+                    Detail = ex.Message
+                },
+
+                LlmTimeOutException ex => new ProblemDetails
+                {
+                    Status = 504,
+                    Title = "AI Service Timeout",
                     Detail = ex.Message
                 },
 
