@@ -5,6 +5,7 @@ using AiRecipe.Content.Api.Filters;
 using AiRecipe.Content.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Net.Http;
 
 
 // Application startup
