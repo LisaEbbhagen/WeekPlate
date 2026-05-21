@@ -19,7 +19,7 @@ namespace AiRecipe.Content.Api.Controllers
         {
             _recipeService = recipeService;
         }
-  
+
         /// <summary>
         /// Returns a paged list of recipes with optional filters.
         /// </summary>
@@ -32,6 +32,7 @@ namespace AiRecipe.Content.Api.Controllers
         /// <response code="200">Paged list of recipes returned successfully.</response>
         /// <response code="400">Invalid query parameters (e.g. page &lt; 1) provided by the client.</response>
         /// <response code="401">Missing or invalid API key.</response>
+        /// <response code="404">No recipes found matching the provided filters.</response>
         /// <response code="500">Server error while retrieving recipes.</response>
         [HttpGet]
         public async Task<ActionResult<PagedResponse<RecipeResponse>>> GetRecipes(

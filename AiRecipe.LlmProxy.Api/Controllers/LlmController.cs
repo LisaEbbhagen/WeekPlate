@@ -26,7 +26,11 @@ namespace AiRecipe.LlmProxy.Api.Controllers
         /// <returns>MealPlanDto parsed from the LLM response.</returns>
         /// <response code="200">Meal plan generated successfully.</response>
         /// <response code="400">Invalid prompt provided.</response>
+        /// <response code="401">Unauthorized - API key is missing or invalid.</response>
+        /// <response code="403">Forbidden - API key does not have access to this resource.</response>
+        /// <response code="429">Too many requests - rate limit exceeded.</response>
         /// <response code="500">Failed to call or parse response from the LLM service.</response>
+        /// <response code="504">Gateway Timeout - LLM service did not respond in time.</response>
         [HttpGet("generate")]
         public async Task<ActionResult<MealPlanDto>> Generate([FromQuery] string prompt)
         {
