@@ -3,6 +3,7 @@ using AiRecipe.Content.Api.DTOs;
 using AiRecipe.Content.Api.Exceptions;
 using AiRecipe.Content.Api.Filters;
 using AiRecipe.Content.Api.Services;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.RateLimiting;
@@ -35,12 +36,16 @@ namespace AiRecipe.Content.Api.Controllers
         /// <response code="200">Weekly menu generated and saved.</response>
         /// <response code="400">Prompt is empty or invalid.</response>
         /// <response code="401">Missing or invalid API key for this endpoint.</response>
-        /// <response code="502">Internal error while calling the AI service or saving data.</response>
+        /// <response code="429">Too many requests - rate limit exceeded.</response>
+        /// <response code ="500">Unexpected error while processing the request.</response>
+        /// <response code="504">Timeout while waiting for the LLM response.</response>
         [HttpPost("generate-weeklyMealPlan")]
         [ProducesResponseType(typeof(MealPlanDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status502BadGateway)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status504GatewayTimeout)]
         public async Task<IActionResult> GenerateWeeklyMenu([FromQuery, Required] string prompt)
         {
             // Ask the service to import the menu returned by the LLM and persist it.
