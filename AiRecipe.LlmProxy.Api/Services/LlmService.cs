@@ -2,8 +2,10 @@
 using AiRecipe.LlmProxy.Api.Exceptions;
 using OpenAI;
 using OpenAI.Chat;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AiRecipe.LlmProxy.Api.Services
 {
@@ -26,30 +28,41 @@ namespace AiRecipe.LlmProxy.Api.Services
             // Create System Message (instructions)
             try
             {
-                string systemInstructions = "You are a helpful senior chef assistant." +
-                    "Generate a 5-day dinner meal plan in raw JSON format. " +
-                    "The JSON must strictly follow this structure: " +
-                    "{ " +
-                    "  \"theme\": \"Optional short theme description\", " +
-                    "  \"days\": [ " +
-                    "    { " +
-                    "      \"dayName\": \"Monday\", " +
-                    "      \"recipe\": { " +
-                    "        \"title\": \"Recipe Title\", " +
-                    "        \"categoryName\": \"Pasta\", " +
-                    "        \"totalTimeMinutes\": 30, " +
-                    "        \"portions\": 4, " +
-                    "        \"ingredients\": [ " +
-                    "           { \"ingredientName\": \"Ingredient name\", \"amount\": \"1.0\", \"unit\": \"dl\" } " +
-                    "        ], " +
-                    "        \"instructions\": \"Step by step guide.\" " +
-                    "      } " +
-                    "    } " +
-                    "  ] " +
-                    "}. " +
-                    "Important: The 'amount' field MUST be a number string (e.g., '1.0', '5') without any text or fractions." +
-                    "Do not include markdown formatting or conversational text.";
+                string systemInstructions = """
+                    You are a helpful senior chef assistant.
+                    Generate a 5-day dinner meal plan in raw JSON format.
 
+                    CRITICAL LANGUAGE RULES: 
+                    1. All JSON keys (e.g., "theme", "days", "recipe", "ingredientName") MUST remain in English exactly as defined in the schema.
+                    2. All text values MUST be written in Swedish (including recipe titles, instructions, ingredient names, category names, theme, and day names like 'Måndag', 'Tisdag').
+                    3. Use standard Swedish cooking units (e.g., 'dl', 'msk', 'tsk', 'g', 'kg', 'st', 'klyftor').
+                                        
+                    The JSON must strictly follow this structure:
+
+                    {
+                      "theme": "Kort beskrivande tema på svenska (t.ex. Snabba vardagsrätter)",
+                      "days": [
+                        {
+                          "dayName": "Måndag",
+                          "recipe": {
+                            "title": "Recepttitel på svenska",
+                            "categoryName": "Pasta",
+                            "totalTimeMinutes": 30,
+                            "portions": 4,
+                            "ingredients": [
+                               { "ingredientName": "Kycklingfilé", "amount": "500", "unit": "g" }
+                            ],
+                            "instructions": "Steg för steg-instruktioner på svenska."
+                          }
+                        }
+                      ]
+                    }
+
+                    ADDITIONAL RULES:
+                    - The 'amount' field MUST be a string representation of a number (e.g., '1', '2.5') without text or fractions.
+                    - Do NOT include markdown formatting (do NOT wrap in ```json ... ```) and do NOT include any conversational text. Output raw JSON only.
+                    """; 
+          
                 var requestBody = new
                 {
                     model = "gpt-4o-mini",

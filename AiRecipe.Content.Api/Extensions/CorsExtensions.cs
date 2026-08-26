@@ -19,10 +19,9 @@
                 options.AddPolicy("DevelopmentPolicy", policy =>
                 {
                     policy.WithOrigins(
-                        "https://localhost:7148", // Service A HTTPS
-                        "http://localhost:5148",  // Service A HTTP
-                        "https://localhost:7121", // Service B HTTPS
-                        "http://localhost:5218"   // Service B HTTP
+                        "http://localhost:5173" // Frontend Vite HTTPS 
+                        //"https://localhost:7121", // Service B HTTPS
+                        //"http://localhost:5218"   // Service B HTTP
                     )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
