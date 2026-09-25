@@ -10,5 +10,6 @@ namespace AiRecipe.Content.Api.DTOs
 
         public string? Amount { get; set; }
         public string? Unit { get; set; }
+        public string StoreCategory { get; set; } = "Övrigt";
     }
 }

@@ -4,6 +4,7 @@ using AiRecipe.Content.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AiRecipe.Content.Api.Migrations
 {
     [DbContext(typeof(RecipeDbContext))]
-    partial class RecipeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260826114656_UpdateSeedDataToSwedish")]
+    partial class UpdateSeedDataToSwedish
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,35 +57,35 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1743),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7697),
                             Name = "Pasta",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1745),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7703),
                             Name = "Soppa",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1746),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7704),
                             Name = "Sallad",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1747),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7705),
                             Name = "Gryta",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             CategoryId = 5,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1747),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7706),
                             Name = "Asiatiskt",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
@@ -106,8 +109,7 @@ namespace AiRecipe.Content.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StoreCategory")
-                        .IsRequired()
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -121,73 +123,73 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             IngredientId = 1,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1859),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7815),
                             IsAllergen = true,
                             Name = "Spaghetti",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 2,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1860),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7816),
                             IsAllergen = false,
                             Name = "Tomatsås",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 3,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1862),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7818),
                             IsAllergen = false,
                             Name = "Kycklingfilé",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 4,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1863),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7819),
                             IsAllergen = true,
                             Name = "Vispgrädde",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 5,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1864),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7820),
                             IsAllergen = true,
                             Name = "Lax",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 6,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1864),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7821),
                             IsAllergen = false,
                             Name = "Ris",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 7,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1865),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7822),
                             IsAllergen = false,
                             Name = "Linser",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             IngredientId = 8,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1866),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7823),
                             IsAllergen = false,
                             Name = "Avokado",
-                            StoreCategory = "Övrigt",
+                            Type = "",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -233,7 +235,7 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             RecipeId = 1,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1897),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7857),
                             FKCategoryId = 1,
                             Instructions = "Koka pastan, blanda med varm sås.",
                             Portions = 4,
@@ -244,7 +246,7 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             RecipeId = 2,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1898),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7860),
                             FKCategoryId = 2,
                             Instructions = "Stek kycklingen, tillsätt grädde och sjud.",
                             Portions = 2,
@@ -255,7 +257,7 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             RecipeId = 3,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1900),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7862),
                             FKCategoryId = 3,
                             Instructions = "Grilla laxen och blanda med sallad och avokado.",
                             Portions = 2,
@@ -266,7 +268,7 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             RecipeId = 4,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1901),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7863),
                             FKCategoryId = 4,
                             Instructions = "Koka linserna tills de är mjuka i en kryddig buljong.",
                             Portions = 6,
@@ -277,7 +279,7 @@ namespace AiRecipe.Content.Api.Migrations
                         new
                         {
                             RecipeId = 5,
-                            CreatedAt = new DateTime(2026, 9, 25, 8, 55, 24, 242, DateTimeKind.Utc).AddTicks(1903),
+                            CreatedAt = new DateTime(2026, 8, 26, 11, 46, 56, 631, DateTimeKind.Utc).AddTicks(7865),
                             FKCategoryId = 5,
                             Instructions = "Stek kycklingen, servera med kokt ris.",
                             Portions = 3,

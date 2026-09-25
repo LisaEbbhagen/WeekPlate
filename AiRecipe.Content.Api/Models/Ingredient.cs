@@ -8,7 +8,7 @@ namespace AiRecipe.Content.Api.Models
         public int IngredientId { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsAllergen { get; set; }
-        public string? Type { get; set; } = string.Empty;
+        public string StoreCategory { get; set; } = "Övrigt";
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<RecipeIngredient> RecipeIngredients { get; set; } = new();
