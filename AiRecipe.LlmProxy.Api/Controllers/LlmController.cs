@@ -3,10 +3,10 @@ using AiRecipe.LlmProxy.Api.Filters;
 using AiRecipe.LlmProxy.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Text.Json;
 
 namespace AiRecipe.LlmProxy.Api.Controllers
 {
+   
     [Route("api/ai")]
     [ApiController]
     [ServiceFilter(typeof(ApiKeyFilter))]
@@ -20,22 +20,22 @@ namespace AiRecipe.LlmProxy.Api.Controllers
         }
 
         /// <summary>
-        /// Generate a weekly meal plan from the upstream LLM service.
+        /// Generate a weekly meal plan from recipies in database and user preferences.
         /// </summary>
-        /// <param name="prompt">Instructions for the meal plan returned as JSON.</param>
-        /// <returns>MealPlanDto parsed from the LLM response.</returns>
+        /// <param name="request">Instructions for the meal plan returned as JSON.</param>
+        /// <returns>WeeklyMenyPlanDto parsed from the LLM response.</returns>
         /// <response code="200">Meal plan generated successfully.</response>
-        /// <response code="400">Invalid prompt provided.</response>
+        /// <response code="400">Invalid user preferences provided.</response>
         /// <response code="401">Unauthorized - API key is missing or invalid.</response>
         /// <response code="403">Forbidden - API key does not have access to this resource.</response>
         /// <response code="429">Too many requests - rate limit exceeded.</response>
         /// <response code="500">Failed to call or parse response from the LLM service.</response>
         /// <response code="504">Gateway Timeout - LLM service did not respond in time.</response>
-        [HttpGet("generate")]
-        public async Task<ActionResult<MealPlanDto>> Generate([FromQuery] string prompt)
+        [HttpPost("generate")]
+        public async Task<ActionResult<WeeklyMenuPlanDto>> GenerateFromDb([FromBody] WeeklyMenuRequestDto request)
         {
             // Service wraps the OpenAI client and returns a typed DTO or throws on failure.
-            var response = await _llmService.GenerateWeeklyMenuAsync(prompt);
+            var response = await _llmService.GenerateWeeklyMenuFromDbAsync(request);
             return Ok(response);
         }
     }

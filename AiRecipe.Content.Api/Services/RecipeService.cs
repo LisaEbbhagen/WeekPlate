@@ -28,13 +28,41 @@ namespace AiRecipe.Content.Api.Services
             _logger = logger;
         }
 
-        public async Task<MealPlanDto> ImportWeeklyMenuAsync(string prompt)
-        {
-            try
-            {
-                var mealPlan = await _llmClient.GetWeeklyMenuAsync(prompt);
 
-                if (mealPlan?.Days == null || !mealPlan.Days.Any())
+        public async Task<WeeklyMenuResponseDto> GenerateWeeklyMenuFromDbAsync(string? userPreferences, int numberOfDays = 5)
+        {
+            try 
+            {
+                //get all recipes from the database to provide as candidates for the AI model
+                var candidateRecipes = await _context.Recipes
+                    .AsNoTracking()
+                    .Select(r => new RecipeCandidateDto
+                    ( 
+                        r.RecipeId,
+                        r.Title,
+                        r.Category.Name,
+                        r.TotalTimeMinutes,
+                        r.RecipeIngredients.Select(ri => ri.Ingredient.Name).ToList()
+                        ))
+                    .ToListAsync();
+                if (!candidateRecipes.Any())
+                {
+                    _logger.LogWarning("No recipes found in the database to generate a weekly menu.");
+                    throw new NotFoundException("No recipes found in the database to generate a weekly menu.");
+                }
+
+                // Construct a prompt for the AI model based on user preferences and available recipes.
+                var proxyRequest = new WeeklyMenuRequestDto
+                {
+                    UserPreferences = userPreferences,
+                    NumberOfDays = numberOfDays, 
+                    AvailableRecipes = candidateRecipes,
+                };
+
+
+                // Call the LLM client to generate a weekly menu plan based on the prompt and available recipes.
+                var aiPlan = await _llmClient.GetWeeklyMenuFromDbAsync(proxyRequest);
+                if (aiPlan?.Days == null || !aiPlan.Days.Any())
                 {
                     // If the AI response is empty we can't proceed — surface as 404 so callers know nothing was created.
                     _logger.LogWarning("AI returned an empty meal plan for prompt: {Prompt}", prompt);

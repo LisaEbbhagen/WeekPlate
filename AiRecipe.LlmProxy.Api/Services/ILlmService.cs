@@ -4,6 +4,6 @@ namespace AiRecipe.LlmProxy.Api.Services
 {
     public interface ILlmService
     {
-        Task<MealPlanDto> GenerateWeeklyMenuAsync(string prompt);
+        Task<WeeklyMenuPlanDto> GenerateWeeklyMenuFromDbAsync(WeeklyMenuRequestDto requestDto);
     }
 }

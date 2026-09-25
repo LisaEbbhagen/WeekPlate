@@ -23,19 +23,28 @@ namespace AiRecipe.LlmProxy.Api.Services
             _apiKey = config["OpenAI:ApiKey"] ?? throw new ArgumentNullException("OpenAI API Key is missing.");
         }
 
-        public async Task<MealPlanDto> GenerateWeeklyMenuAsync(string prompt)
+        public async Task<WeeklyMenuPlanDto> GenerateWeeklyMenuFromDbAsync(WeeklyMenuRequestDto requestDto)
         {
+            if (requestDto.AvailableRecipes == null || !requestDto.AvailableRecipes.Any())
+            {
+                throw new LlmProxyException("AvailableRecipes cannot be null or empty.");
+            }
             // Create System Message (instructions)
             try
             {
                 string systemInstructions = """
-                    You are a helpful senior chef assistant.
-                    Generate a 5-day dinner meal plan in raw JSON format.
+                    You are a helpful senior chef and meal planning assistant.
+                    Your task is to create a 5-day weekly menu plan by selecting recipes from a provided list of candidate recipes based on the user's preferences.
+
+                    CRITICAL SELECTION RULES: 
+                    1. The weekly menu must consist of exactly 5 days (Måndag to Fredag). If the user dont specifically request a number of days, default to 5 days.
+                    2. NEVER invent new recipes, fake IDs, or modify existing recipe details.
+                    3. Never repeat the same recipe in the weekly menu. Each day must have a unique recipe.
+                    4. Match the user's preferences, dietary restrictions, and allergies against the titles, categories, and ingredient names in the candidate list.
 
                     CRITICAL LANGUAGE RULES: 
-                    1. All JSON keys (e.g., "theme", "days", "recipe", "ingredientName") MUST remain in English exactly as defined in the schema.
-                    2. All text values MUST be written in Swedish (including recipe titles, instructions, ingredient names, category names, theme, and day names like 'Måndag', 'Tisdag').
-                    3. Use standard Swedish cooking units (e.g., 'dl', 'msk', 'tsk', 'g', 'kg', 'st', 'klyftor').
+                    1. All JSON keys (e.g., "theme", "days", "dayName", "recipeId", "ingredientName") MUST remain in English exactly as defined in the schema.
+                    2. All text values MUST be written in Swedish (e.g., 'theme', and day names like 'Måndag', 'Tisdag').                    
                                         
                     The JSON must strictly follow this structure:
 
@@ -44,32 +53,35 @@ namespace AiRecipe.LlmProxy.Api.Services
                       "days": [
                         {
                           "dayName": "Måndag",
-                          "recipe": {
-                            "title": "Recepttitel på svenska",
-                            "categoryName": "Pasta",
-                            "totalTimeMinutes": 30,
-                            "portions": 4,
-                            "ingredients": [
-                               { "ingredientName": "Kycklingfilé", "amount": "500", "unit": "g" }
-                            ],
-                            "instructions": "Steg för steg-instruktioner på svenska."
-                          }
+                          "recipeId": 12 
                         }
                       ]
                     }
 
                     ADDITIONAL RULES:
-                    - The 'amount' field MUST be a string representation of a number (e.g., '1', '2.5') without text or fractions.
+                    - The 'recipeId' field MUST be an integer matching an 'id' from the provided candidate list.    
+                    - The number of objects in 'days' MUST match the 'numberOfDays' requested by the user or 5 if not specified.                    
                     - Do NOT include markdown formatting (do NOT wrap in ```json ... ```) and do NOT include any conversational text. Output raw JSON only.
                     """; 
           
+                string recipesJson = JsonSerializer.Serialize(requestDto.AvailableRecipes);
+                string userPrompt = $"""
+                    Create a weekly menu for { requestDto.NumberOfDays} days.
+
+                    User Preferences:                    
+                    { (string.IsNullOrWhiteSpace(requestDto.UserPreferences) ? "Variated and balanced weekly menu" : requestDto.UserPreferences)}
+
+                    Available recipes in the database:
+                    { recipesJson}
+                """;
+
                 var requestBody = new
                 {
                     model = "gpt-4o-mini",
                     messages = new[]
                     {
                         new { role = "system", content = systemInstructions },
-                        new { role = "user", content = prompt }
+                        new { role = "user", content = userPrompt }
                     },
                     response_format = new { type = "json_object" }
                 };
@@ -100,21 +112,21 @@ namespace AiRecipe.LlmProxy.Api.Services
                     .GetProperty("content")
                     .GetString() ?? "";
 
-                var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
                 _logger.LogInformation(aiTextAnswer);
-                var result = JsonSerializer.Deserialize<MealPlanDto>(aiTextAnswer, options);
+                var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+                var result = JsonSerializer.Deserialize<WeeklyMenuPlanDto>(aiTextAnswer, options);
 
                 return result ?? throw new LlmProxyException("Failed to deserialize the meal plan.");
             }
 
             catch (TaskCanceledException ex)
             {
-                _logger.LogError(ex, "Timeout occurred while accessing OpenAI API for prompt: {Prompt}", prompt);
+                _logger.LogError(ex, "Timeout occurred while accessing OpenAI API.");
                 throw new LlmTimeOutException("Timeout occurred while accessing OpenAI API.", ex);
             }
             catch (Exception ex) when (ex is not LlmUnauthorizedException && ex is not LlmTimeOutException && ex is not LlmRateLimitException)
             {
-                _logger.LogError(ex, "Failed to generate mealplan from: {Prompt}", prompt);
+                _logger.LogError(ex, "Failed to generate mealplan.");
                 throw new LlmProxyException("Failed to generate mealplan from prompt.", ex);
             }
         }
